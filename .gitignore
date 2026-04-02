@@ -1,0 +1,53 @@
+# Virtual environments
+.venv/
+venv/
+env/
+.env/
+.python-version
+
+# Bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+*.egg-info/
+.eggs/
+dist/
+build/
+*.egg
+
+# Environment and secrets (never commit keys or API tokens)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Test / coverage
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs and local data
+*.log
+logs/
