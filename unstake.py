@@ -15,7 +15,21 @@ load_dotenv()
 DEFAULT_WALLET_NAME = os.getenv("DEFAULT_WALLET_NAME")
 BT_NETWORK = os.getenv("BT_NETWORK", "finney")
 MIN_REMAINING_ALPHA_TAO = 0.1
-MAX_RETRY_COUNT = int(os.getenv("MAX_RETRY_COUNT", "10"))
+
+
+def _max_retry_limit_from_env() -> int | None:
+    raw = os.getenv("MAX_RETRY_COUNT", "10")
+    try:
+        n = int(raw.strip(), 10)
+    except ValueError:
+        print("Warning: MAX_RETRY_COUNT must be an integer; using default 10.", file=sys.stderr)
+        return 10
+    if n <= 0:
+        return None
+    return n
+
+
+MAX_RETRY_LIMIT = _max_retry_limit_from_env()
 
 
 def _log(tag: str, message: str) -> None:
@@ -113,8 +127,8 @@ async def main() -> None:
         retry_count = 0
 
         while True:
-            if retry_count >= MAX_RETRY_COUNT:
-                _log("abort", f"Stopped after {MAX_RETRY_COUNT} retries.")
+            if MAX_RETRY_LIMIT is not None and retry_count >= MAX_RETRY_LIMIT:
+                _log("abort", f"Stopped after {MAX_RETRY_LIMIT} retries.")
                 break
             if not call:
                 call, batch_n = await build_call(subtensor=subtensor, ck_addr=ck_addr, remove_stake_list=remove_stake_list, limit_price=limit_price)
