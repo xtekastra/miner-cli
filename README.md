@@ -1,6 +1,14 @@
 # miner-cli
 
-**Current scope:** this version only implements **unstake** (remove subnet / alpha stake). There are no other miner or staking workflows in the repo yet.
+**MVP / work in progress.** This repository is an early-stage project whose goal is to provide **utility tooling for Bittensor miners**—practical command-line and automation helpers for common on-chain workflows (staking, unstaking, monitoring, and related operations).
+
+**Current implementation:** only **unstake** is shipped today (remove subnet / alpha stake). Additional miner workflows will be added over time.
+
+## Upcoming features
+
+- **`fast_auto_reg.py`** — fast automated miner registration on a subnet.
+- **`stake.py`** — stake with a limit price; wait until the subnet price moves up before submitting (aligned with the limit-price flow in `unstake.py`).
+- More miner utilities will be added here over time.
 
 Interactive command-line tool for [Bittensor](https://github.com/opentensor/bittensor) that removes subnet (alpha) stake from selected hotkeys. It batches `remove_stake_full_limit` calls, optionally waits per block until a price condition is met, and submits the batch via MEV-shielded (`mev_submit_encrypted`) extrinsics.
 
