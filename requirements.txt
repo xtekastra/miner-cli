@@ -1,3 +1,2 @@
 bittensor
 python-dotenv
-colorlog
