@@ -15,7 +15,7 @@ load_dotenv()
 DEFAULT_WALLET_NAME = os.getenv("DEFAULT_WALLET_NAME")
 BT_NETWORK = os.getenv("BT_NETWORK", "finney")
 MIN_REMAINING_ALPHA_TAO = 0.1
-MAX_BLOCK_WAITS = int(os.getenv("MINER_CLI_MAX_BLOCK_WAITS", "0"))
+MAX_RETRY_COUNT = int(os.getenv("MAX_RETRY_COUNT", "10"))
 
 
 def _log(tag: str, message: str) -> None:
@@ -110,24 +110,23 @@ async def main() -> None:
 
         call = None
         batch_n = 0
-        block_waits = 0
+        retry_count = 0
 
         while True:
-            if MAX_BLOCK_WAITS and block_waits >= MAX_BLOCK_WAITS:
-                _log("abort", f"Stopped after {MAX_BLOCK_WAITS} block waits (MINER_CLI_MAX_BLOCK_WAITS).")
+            if retry_count >= MAX_RETRY_COUNT:
+                _log("abort", f"Stopped after {MAX_RETRY_COUNT} retries.")
                 break
-
             if not call:
                 call, batch_n = await build_call(subtensor=subtensor, ck_addr=ck_addr, remove_stake_list=remove_stake_list, limit_price=limit_price)
                 if not call:
                     _log("batch", "Nothing to submit (no removable stake above threshold).")
                     break
                 _log("batch", f"Ready: {batch_n} remove call(s) in one force_batch.")
+                retry_count += 1
 
             limit_str = "market" if limit_price is None else str(limit_price)
             _log("wait", f"Next block…  subnet={netuid}  limit={limit_str}")
             await subtensor.wait_for_block()
-            block_waits += 1
 
             current_price = (await subtensor.get_subnet_price(netuid)).tao
             if limit_price is None or current_price > limit_price:
